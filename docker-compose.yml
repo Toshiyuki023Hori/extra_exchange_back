@@ -1,0 +1,67 @@
+version: "3.7"
+
+services:
+  # Elasticsearch用のコンテナ
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.14.2
+    environment:
+      - discovery.type=single-node
+      - cluster.name=docker-cluster
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    ports:
+      - 9200:9200
+    volumes:
+      - esdata:/usr/share/elasticsearch/data
+  # Kibana用のコンテナ
+  kibana:
+    # elasticsearchとkibanaのimageのバージョン番号を一致させる
+    image: docker.elastic.co/kibana/kibana:7.14.2
+    ports:
+      - 5601:5601
+    depends_on:
+      - elasticsearch
+  redis:
+    image: redis:6.0.16-alpine
+    command: redis-server
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/var/lib/redis/data
+  db:
+    image: postgres
+    ports:
+      - 5432:5432
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
+    environment:
+      POSTGRES_PASSWORD: ${PG_PASSWORD}
+  api:
+    tty: true
+    stdin_open: true # containerのinputをオープンに(binding.pry用)
+    depends_on:
+      - db
+      - elasticsearch
+      - redis
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "1234:1234"
+      - "3000:3000"
+      - "26162:26162"
+    volumes:
+      - .:/rails_app
+      - gem_data:/usr/local/bundle
+    command: rails server -b 0.0.0.0
+    # command: bundle exec rdebug-ide --host 0.0.0.0 --port 1234 --dispatcher-port 26162 -- bin/rails s -p 3000 -b 0.0.0.0
+volumes:
+  pgdata:
+  gem_data:
+  esdata:
+  redis_data:
