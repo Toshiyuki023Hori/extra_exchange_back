@@ -9,7 +9,7 @@ RUN mkdir /rails_app
 # 作成したroot dirをworking directry として指定
 WORKDIR /rails_app
 RUN apt-get update -qq && apt-get install -y nodejs postgresql-client
-# ローカルのyGemfileをコンテナ内にコピー
+# ローカルのGemfileをコンテナ内にコピー
 COPY Gemfile /rails_app/Gemfile
 COPY Gemfile.lock /rails_app/Gemfile.lock
 RUN gem install bundler && bundle install
