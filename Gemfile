@@ -32,6 +32,8 @@ gem 'rack-cors'
 # For authentication
 gem 'active_model_serializers'
 gem 'jwt'
+gem 'devise'
+gem 'rack-attack'
 
 # For translating to Japanese
 gem 'rails-i18n'
