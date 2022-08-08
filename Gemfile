@@ -33,6 +33,7 @@ gem 'rack-cors'
 gem 'active_model_serializers'
 gem 'jwt'
 gem 'devise'
+gem 'devise-jwt'
 gem 'rack-attack'
 
 # For translating to Japanese

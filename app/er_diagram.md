@@ -5,6 +5,8 @@ This diagram is written with `mermaid.js`
 erDiagram
 
 users ||--o{ reviews: ""
+users ||--|| mail_registrations: ""
+users ||--||
 available_areas ||--o{ pickup_places: ""
 %% 中間テーブル --
 users ||--o{ area_user_relations: ""
@@ -38,9 +40,16 @@ deals ||--o{ deal_chats: ""
 
 users {
     integer id PK
-    string name
+    string username UNIQUE
+    image icon
+    image header
+}
+
+mail_registrations {
+    integer user_id FK "PKでもある"
     string email
-    integer tel
+    string password
+    string created_at
 }
 
 reviews {
